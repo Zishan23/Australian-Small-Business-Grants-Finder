@@ -25,6 +25,8 @@ Small business owners in Australia often miss out on grants they qualify for bec
 
 ## Architecture
 
+![Architecture diagram](docs/architecture.svg)
+
 Serverless first design to stay within a small AWS budget, with container based compute used only where it earns its place.
 
 - **Ingestion**: AWS Lambda functions per source, triggered weekly by EventBridge Scheduler. The heavier scraping and parsing job runs on ECS Fargate, scheduled weekly.

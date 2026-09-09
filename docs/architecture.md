@@ -2,9 +2,7 @@
 
 ## Overview
 
-(Add architecture diagram here, e.g. exported from draw.io or excalidraw as architecture.png, referenced below)
-
-![Architecture diagram](architecture.png)
+![Architecture diagram](architecture.svg)
 
 ## Data flow
 
