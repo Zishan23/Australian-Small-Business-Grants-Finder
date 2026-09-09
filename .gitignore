@@ -1,0 +1,43 @@
+# Byte compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# AWS
+.aws-sam/
+cdk.out/
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data (raw pulls should not be committed)
+data/raw/
+data/processed/
+*.csv
+*.parquet
