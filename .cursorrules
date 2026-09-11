@@ -10,7 +10,7 @@ Small business owners in Australia miss grants they qualify for because informat
 
 ## Data sources (see src/ingestion/sources)
 
-- GrantConnect (grants.gov.au) — API, not yet confirmed which endpoint/auth
+- GrantConnect (grants.gov.au) — scraping, no public API (the US grants.gov has one, GrantConnect does not)
 - data.gov.au — CKAN API (package_search)
 - business.gov.au — scraping, no public API
 - ATO small business guidance — scraping, no public API
@@ -41,7 +41,8 @@ Python for ingestion, processing, and the RAG pipeline. AWS for infrastructure. 
 
 - README.md and docs/architecture.md are written and current
 - src/ingestion/sources/base.py defines the shared ingester interface (BaseSourceIngester, RawRecord)
-- Each of the five source ingesters (grantconnect.py, data_gov_au.py, business_gov_au.py, ato.py, fair_work_mapd.py) is a stub: class defined, correct interface, but fetch() raises NotImplementedError with a TODO describing what needs to be implemented
+- grantconnect.py is implemented: scrapes the Go/List listing page and Go/Show detail pages using requests and BeautifulSoup. The selectors are a first pass and have not been verified against live HTML (GrantConnect was not reachable from the sandbox this was written in), so confirm them against the real site and adjust _extract_go_links and _extract_labeled_fields if needed
+- The remaining four source ingesters (data_gov_au.py, business_gov_au.py, ato.py, fair_work_mapd.py) are stubs: class defined, correct interface, but fetch() raises NotImplementedError with a TODO describing what needs to be implemented
 - src/ingestion/pipeline.py is a working orchestrator: it runs every source ingester, isolates failures per source so one bad source does not stop the others, and writes raw output to S3 as newline delimited JSON via src/ingestion/utils.py
 - tests/test_pipeline.py verifies the failure isolation behavior and currently passes against the stubbed sources
 - src/processing, src/rag, and src/lambda_handlers are empty package placeholders, not yet built
@@ -49,7 +50,7 @@ Python for ingestion, processing, and the RAG pipeline. AWS for infrastructure. 
 
 ## What to build next
 
-Implement the fetch() method on each source ingester, one at a time, starting with whichever is prioritized in conversation. GrantConnect and data.gov.au have real APIs and should be more straightforward than the scraping based sources (business.gov.au, ATO, Fair Work MAPD).
+Implement the fetch() method on each remaining source ingester, one at a time, starting with whichever is prioritized in conversation. data.gov.au has a real API and should be the most straightforward. GrantConnect, business.gov.au, ATO, and Fair Work MAPD are all scraping based; verify GrantConnect's selectors against the live site before trusting its output.
 
 ## Conventions to follow
 

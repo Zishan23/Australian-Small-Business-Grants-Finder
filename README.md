@@ -17,7 +17,7 @@ Small business owners in Australia often miss out on grants they qualify for bec
 
 | Source | Type | Access method |
 |---|---|---|
-| GrantConnect (grants.gov.au) | Grants | API |
+| GrantConnect (grants.gov.au) | Grants | Scraping (no public API; unlike the US grants.gov, GrantConnect does not publish one) |
 | data.gov.au | Datasets | CKAN API |
 | business.gov.au | Grants and programs | Scraping |
 | ATO guidance | Tax compliance | Scraping |
