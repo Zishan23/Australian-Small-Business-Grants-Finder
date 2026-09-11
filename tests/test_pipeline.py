@@ -18,19 +18,25 @@ def test_run_pipeline_isolates_source_failures():
     """
     sample = [RawRecord.create("grantconnect", {"title": "Sample"})]
 
+    data_gov_sample = [RawRecord.create("data_gov_au", {"id": "pkg-1"})]
+
     with patch("src.ingestion.pipeline.write_raw_records_to_s3"):
-        # GrantConnect is implemented; stub its fetch so this test stays
-        # offline. Remaining sources still raise NotImplementedError.
+        # Implemented sources are stubbed so this test stays offline.
+        # Remaining sources still raise NotImplementedError.
         with patch(
             "src.ingestion.pipeline.GrantConnectIngester.fetch",
             return_value=sample,
+        ), patch(
+            "src.ingestion.pipeline.DataGovAuIngester.fetch",
+            return_value=data_gov_sample,
         ):
             results = run_pipeline(bucket_name="test-bucket")
 
     assert len(results) == 5
     assert results["grantconnect"].startswith("ok")
+    assert results["data_gov_au"].startswith("ok")
     assert all(
         "failed" in status
         for name, status in results.items()
-        if name != "grantconnect"
+        if name not in ("grantconnect", "data_gov_au")
     )
