@@ -23,7 +23,6 @@ credentials.json
 credentials.csv
 accessKeys.csv
 aws-credentials*
-!.env.example
 
 # Cursor / local AI context (keep local, do not publish)
 .cursorrules
