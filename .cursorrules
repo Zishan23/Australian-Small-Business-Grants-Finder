@@ -46,7 +46,7 @@ Python for ingestion, processing, and the RAG pipeline. AWS for infrastructure. 
 - src/ingestion/pipeline.py is a working orchestrator: it runs every source ingester, isolates failures per source so one bad source does not stop the others, and writes raw output to S3 as newline delimited JSON via src/ingestion/utils.py
 - tests/test_pipeline.py verifies the failure isolation behavior and currently passes against the stubbed sources
 - src/processing, src/rag, and src/lambda_handlers are empty package placeholders, not yet built
-- infra/ has a README describing planned resources only, no actual IaC yet
+- infra/ has a README describing planned resources, plus a real scoped IAM policy (iam-policy-grants-finder-ingestion.json) and AWS CLI commands for creating the grants-finder-ingestion IAM user that the pipeline's S3 writes use. No other IaC yet.
 
 ## What to build next
 
