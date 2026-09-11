@@ -11,10 +11,26 @@ env/
 # Environment variables and secrets
 .env
 .env.*
+!.env.example
 *.pem
 *.key
+*.p12
+*.pfx
+*access*key*
+*secret*
+credentials
+credentials.json
+credentials.csv
+accessKeys.csv
+aws-credentials*
+!.env.example
+
+# Cursor / local AI context (keep local, do not publish)
+.cursorrules
+.cursor/
 
 # AWS
+.aws/
 .aws-sam/
 cdk.out/
 .terraform/
