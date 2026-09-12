@@ -28,7 +28,7 @@ aws iam put-user-policy \
 aws iam create-access-key --user-name grants-finder-ingestion
 ```
 
-The last command prints an AccessKeyId and SecretAccessKey. Copy those into your local .env (see .env.example), never into source code or the AWS CLI history you'd commit anywhere.
+The last command prints an AccessKeyId and SecretAccessKey. Copy those into your local .env (gitignored), never into source code or the AWS CLI history you'd commit anywhere.
 
 If you would rather use the console: create the user under IAM, choose "Attach policies directly" then "Create inline policy", switch to the JSON tab, and paste the contents of iam-policy-grants-finder-ingestion.json.
 
