@@ -50,7 +50,34 @@ Designed to run on approximately $100 AUD, which shaped the decision to go serve
 
 ## Project status
 
-Actively in development. See commit history for progress.
+- **Implemented and tested**: GrantConnect scraper, data.gov.au CKAN client. Both have unit tests covering parsing, pagination, and error handling.
+- **Stubbed, not yet implemented**: business.gov.au, ATO guidance, Fair Work Commission MAPD. Interfaces are defined; fetch logic is next.
+- **Pipeline orchestrator**: working. Runs every source, isolates failures per source, writes raw output to S3 as newline delimited JSON.
+- **Infrastructure**: S3 raw bucket created, scoped IAM user and policy defined (see infra/). Local credentials live in a gitignored `.env`.
+- **Not yet started**: processing/normalization layer, RAG and multi agent query layer, ECS Fargate scheduling, DynamoDB, Bedrock integration, EKS demo.
+
+See commit history for detailed progress.
+
+## Getting started
+
+```
+git clone https://github.com/Zishan23/Australian-Small-Business-Grants-Finder.git
+cd Australian-Small-Business-Grants-Finder
+pip install -r requirements.txt
+# create a local .env with AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+```
+
+Run the ingestion pipeline locally:
+
+```
+python -m src.ingestion.pipeline
+```
+
+Run the test suite:
+
+```
+pytest tests/ -v
+```
 
 ## Author
 
