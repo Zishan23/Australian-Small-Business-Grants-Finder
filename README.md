@@ -79,6 +79,10 @@ Run the test suite:
 pytest tests/ -v
 ```
 
+## CI/CD
+
+GitHub Actions runs lint + the full test suite on every push and pull request, and packages a deployment artifact on every merge to `master`. See [docs/ci-cd.md](docs/ci-cd.md) for what's wired up versus what still needs real AWS infra before it can deploy anything.
+
 ## Author
 
 Ismam Fatin Zishan ([ismamzishan.com](https://ismamzishan.com))

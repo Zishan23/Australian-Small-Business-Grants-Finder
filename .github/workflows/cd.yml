@@ -1,0 +1,96 @@
+name: CD
+
+# Runs after every push to master (i.e. after a PR merges) and can
+# also be triggered manually. It always re-runs the test suite and
+# packages a deployment artifact - that part works today, with no AWS
+# access needed. The actual "deploy to AWS" job is a template: it is
+# skipped until the repo owner turns it on (see the `deploy` job
+# below and docs/ci-cd.md), because the Lambda/ECS resources it would
+# push code to don't exist yet (see README's "Project status" -
+# infra is currently just an S3 bucket, an IAM policy, and docs).
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {}
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest tests/ -v
+
+      - name: Package deployment artifact
+        # Zips the application code (not the website - that runs
+        # locally/on its own host, not as a Lambda) plus a manifest of
+        # the commit it was built from, so it's traceable back to a
+        # commit even before there is real infra to deploy it to.
+        run: |
+          mkdir -p dist
+          echo "commit=${{ github.sha }}"      >  dist/BUILD_INFO
+          echo "built_at=$(date -u +%FT%TZ)"    >> dist/BUILD_INFO
+          zip -r dist/grants-finder-backend.zip \
+            src/ingestion src/processing src/rag \
+            requirements.txt dist/BUILD_INFO
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: grants-finder-backend-${{ github.sha }}
+          path: dist/grants-finder-backend.zip
+          retention-days: 30
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # Off by default. Turn this on once real infra exists (Terraform/
+    # CDK for the ingestion Lambda/ECS task, the processing Lambda,
+    # DynamoDB table, etc. - see README's "Not yet started" list) by
+    # setting the repository variable DEPLOY_ENABLED to "true" under
+    # Settings -> Secrets and variables -> Actions -> Variables, and
+    # adding the AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY secrets for
+    # the scoped deploy IAM user (see infra/README.md). See
+    # docs/ci-cd.md for the full checklist.
+    if: vars.DEPLOY_ENABLED == 'true'
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: grants-finder-backend-${{ github.sha }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-southeast-2' }}
+
+      - name: Deploy ingestion Lambda(s)
+        # Placeholder: fill in the real function name(s) as a
+        # repository variable once infra/ creates them, e.g.
+        #   aws lambda update-function-code \
+        #     --function-name ${{ vars.INGESTION_LAMBDA_NAME }} \
+        #     --zip-file fileb://grants-finder-backend.zip
+        # Left as an explicit failure rather than a silent no-op, so
+        # turning DEPLOY_ENABLED on before infra exists fails loudly
+        # here instead of a real AWS resource being deployed to.
+        run: |
+          echo "DEPLOY_ENABLED is true, but no deploy target is configured yet."
+          echo "Fill in the aws lambda/ecs commands in this step once infra/ provisions real resources."
+          exit 1
