@@ -50,11 +50,13 @@ Designed to run on approximately $100 AUD, which shaped the decision to go serve
 
 ## Project status
 
-- **Implemented and tested**: GrantConnect scraper, data.gov.au CKAN client. Both have unit tests covering parsing, pagination, and error handling.
-- **Stubbed, not yet implemented**: business.gov.au, ATO guidance, Fair Work Commission MAPD. Interfaces are defined; fetch logic is next.
+- **Ingestion — implemented and tested**: all five sources (GrantConnect, data.gov.au, business.gov.au, ATO guidance, Fair Work MAPD) have working fetch logic and unit tests against static HTML/text fixtures. The three scrapers added after the initial GrantConnect pass (business.gov.au, ATO, Fair Work MAPD) were written without access to the live sites from this environment — their selectors are a documented first pass; verify against real markup before relying on them, especially Fair Work MAPD's PDF pay-rate parsing.
 - **Pipeline orchestrator**: working. Runs every source, isolates failures per source, writes raw output to S3 as newline delimited JSON.
-- **Infrastructure**: S3 raw bucket created, scoped IAM user and policy defined (see infra/). Local credentials live in a gitignored `.env`.
-- **Not yet started**: processing/normalization layer, RAG and multi agent query layer, ECS Fargate scheduling, DynamoDB, Bedrock integration, EKS demo.
+- **Processing / normalization — implemented and tested**: `src/processing` maps each source's raw payload into a common `NormalizedRecord` schema (`src/processing/schema.py`), writes normalized output to the processed S3 zone, and batch-writes to DynamoDB (partition key `record_id`, on-demand billing recommended).
+- **Multi agent RAG query layer — implemented and tested**: `src/rag` has a retrieval agent (keyword-overlap scoring today, with an injectable embedding function so real Bedrock embeddings drop in without changing callers), an eligibility agent and a compliance agent (each with a deterministic template fallback and an injectable Bedrock generation function), and an orchestrator that classifies each question and routes it. All AWS/Bedrock calls are isolated behind `src/rag/bedrock_client.py`, so none of this is exercised against real AWS yet — it's fully unit tested with mocked/injected clients.
+- **Local demo website**: `src/website` is a FastAPI app + single-page chat UI that calls the RAG layer through `src/rag/interface.py`'s `QueryOrchestrator` contract. It currently runs against `MockQueryOrchestrator` (every answer is labeled as a demo in the UI); swapping in the real `RagQueryOrchestrator` with live records and a configured `BedrockClient` needs no changes to the website itself.
+- **Infrastructure**: S3 raw bucket created, scoped IAM user and policy defined (see infra/). Local credentials live in a gitignored `.env`. Terraform/CDK for the processing DynamoDB table, SQS queue, ECS Fargate ingestion task, EventBridge schedule, SNS alerting, and Bedrock access is not yet written.
+- **Not yet started / not yet deployed**: no AWS deployment of the processing or RAG layers, no real Bedrock calls, ECS Fargate scheduling, SNS alerting, EKS demo, and the three newer scrapers' selectors are unverified against live sites.
 
 See commit history for detailed progress.
 
