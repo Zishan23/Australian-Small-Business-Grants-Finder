@@ -4,227 +4,571 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AU Small Business Grants Finder (demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f7f7f5;
-    --card: #ffffff;
-    --border: #e4e2dd;
-    --text: #2b2a27;
-    --muted: #706c64;
-    --accent: #b5651d;
-    --accent-dark: #8f4f16;
+    --bg: #f5f6f4;
+    --surface: #ffffff;
+    --surface-2: #eef1ec;
+    --ink: #14231f;
+    --muted: #5b6b63;
+    --line: #dce3dd;
+    --accent: #1f6f5c;
+    --accent-ink: #ffffff;
+    --accent-soft: #e3efe9;
+    --warn: #8a5a17;
+    --warn-soft: #f7ecd9;
+    --danger: #a3372c;
+    --danger-soft: #fbeae7;
+    color-scheme: light;
   }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1512;
+      --surface: #16201c;
+      --surface-2: #1c2822;
+      --ink: #edf2ee;
+      --muted: #9baaa2;
+      --line: #26332c;
+      --accent: #3fbfa0;
+      --accent-ink: #08201a;
+      --accent-soft: #17342c;
+      --warn: #e0b45c;
+      --warn-soft: #2e2517;
+      --danger: #e08a7d;
+      --danger-soft: #2e1a16;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1512;
+    --surface: #16201c;
+    --surface-2: #1c2822;
+    --ink: #edf2ee;
+    --muted: #9baaa2;
+    --line: #26332c;
+    --accent: #3fbfa0;
+    --accent-ink: #08201a;
+    --accent-soft: #17342c;
+    --warn: #e0b45c;
+    --warn-soft: #2e2517;
+    --danger: #e08a7d;
+    --danger-soft: #2e1a16;
+    color-scheme: dark;
+  }
+
   * { box-sizing: border-box; }
+
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-inline: 16px;
   }
-  header {
-    padding: 24px 20px 16px;
-    max-width: 720px;
+
+  .wrap {
+    max-width: 680px;
     margin: 0 auto;
+    padding-block: 20px 32px;
   }
-  header h1 {
-    font-size: 1.4rem;
-    margin: 0 0 4px;
+
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
   }
-  header p {
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.5rem;
     margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0;
+  }
+  .icon-btn:hover { color: var(--ink); background: var(--surface-2); }
+  .icon-btn svg { width: 17px; height: 17px; }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--warn);
+    background: var(--warn-soft);
+    border-radius: 999px;
+    padding: 5px 10px;
+    white-space: nowrap;
+  }
+  .status-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--warn);
+    flex-shrink: 0;
+  }
+
+  .subhead {
     color: var(--muted);
     font-size: 0.92rem;
+    margin: 0 0 20px;
+    max-width: 50ch;
   }
-  .banner {
-    max-width: 720px;
-    margin: 0 auto 12px;
-    padding: 10px 14px;
-    background: #fbeee0;
-    border: 1px solid #ead2b3;
-    border-radius: 8px;
-    color: #6b4a1c;
-    font-size: 0.85rem;
-  }
-  main {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 20px 40px;
-  }
-  #chat {
+
+  .thread {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
+    min-height: 40px;
   }
-  .msg {
-    padding: 12px 14px;
-    border-radius: 10px;
-    line-height: 1.45;
-    font-size: 0.95rem;
+
+  .empty-state {
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    text-align: center;
   }
-  .msg.user {
-    background: #2b2a27;
-    color: #fff;
-    align-self: flex-end;
-    max-width: 85%;
+
+  .row { display: flex; flex-direction: column; }
+  .row.user { align-items: flex-end; }
+  .row.bot { align-items: flex-start; }
+
+  .bubble {
+    border-radius: 14px;
+    padding: 13px 15px;
+    font-size: 0.94rem;
+    line-height: 1.5;
+    max-width: 88%;
   }
-  .msg.bot {
-    background: var(--card);
-    border: 1px solid var(--border);
-    align-self: flex-start;
+  .row.user .bubble {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-bottom-right-radius: 4px;
+  }
+  .row.bot .bubble {
+    background: var(--surface);
+    border: 1px solid var(--line);
     max-width: 100%;
+    border-bottom-left-radius: 4px;
   }
-  .mock-tag {
-    display: inline-block;
+  .row.bot .bubble.error {
+    border-color: var(--danger);
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
+  .timestamp {
     font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 4px;
+    padding-inline: 4px;
+  }
+
+  .demo-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background: #fbeee0;
-    color: #8f4f16;
-    padding: 2px 6px;
-    border-radius: 4px;
+    letter-spacing: 0.05em;
+    color: var(--warn);
+    background: var(--warn-soft);
+    border-radius: 5px;
+    padding: 2px 7px;
     margin-bottom: 8px;
   }
+
   .citations {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--border);
-    font-size: 0.82rem;
+    margin-top: 11px;
+    padding-top: 11px;
+    border-top: 1px solid var(--line);
   }
-  .citations a {
-    color: var(--accent-dark);
-    text-decoration: none;
-  }
-  .citations a:hover { text-decoration: underline; }
-  .agents-used {
-    margin-top: 6px;
-    font-size: 0.75rem;
+  .citations-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--muted);
+    margin-bottom: 6px;
   }
+  .citation {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 0.85rem;
+    padding: 3px 0;
+  }
+  .citation a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .citation a:hover, .citation a:focus-visible { text-decoration: underline; }
+  .citation .src {
+    color: var(--muted);
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .agents {
+    margin-top: 8px;
+    font-size: 0.76rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .agents b { color: var(--ink); font-weight: 600; }
+
+  .typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 2px;
+  }
+  .typing span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: bounce 1.1s infinite ease-in-out;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .typing span { animation: none; opacity: 0.8; }
+  }
+
   form {
     display: flex;
     gap: 8px;
+    margin-bottom: 10px;
   }
   input[type="text"] {
     flex: 1;
     padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: inherit;
+    min-width: 0;
+  }
+  input[type="text"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
   }
   button {
     padding: 12px 18px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--accent);
-    color: #fff;
-    font-size: 0.95rem;
+    color: var(--accent-ink);
+    font-size: 0.92rem;
+    font-weight: 600;
     cursor: pointer;
+    font-family: inherit;
+    flex-shrink: 0;
   }
-  button:hover { background: var(--accent-dark); }
-  button:disabled { opacity: 0.6; cursor: default; }
+  button:hover { opacity: 0.9; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
   .examples {
-    margin-top: 10px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    margin-bottom: 4px;
   }
   .examples button {
-    background: var(--card);
-    color: var(--text);
-    border: 1px solid var(--border);
-    font-size: 0.8rem;
-    padding: 6px 10px;
+    background: var(--surface-2);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    font-weight: 500;
+    font-size: 0.78rem;
+    padding: 7px 11px;
   }
-  .examples button:hover { background: #f0efeb; }
+  .examples button:hover { background: var(--accent-soft); }
+  .examples button:disabled { opacity: 0.5; }
+
+  .note {
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .note code {
+    background: var(--surface-2);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .row { animation: rise 0.25s ease-out; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 420px) {
+    h1 { font-size: 1.3rem; }
+    .bubble { max-width: 94%; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>AU Small Business Grants Finder</h1>
-  <p>Ask about grants you may be eligible for, or compliance obligations (tax, pay rates, awards).</p>
-</header>
-<div class="banner">
-  This is a local demo. Answers are currently generated by a mock backend until the
-  real retrieval + Bedrock pipeline is deployed — every response says so.
-</div>
-<main>
-  <div id="chat"></div>
+<div class="wrap">
+  <header>
+    <div class="title-row">
+      <h1>AU Small Business Grants Finder</h1>
+    </div>
+    <div class="header-actions">
+      <span class="status-pill">Mock backend</span>
+      <button type="button" class="icon-btn" id="theme-toggle" title="Toggle theme" aria-label="Toggle light/dark theme">
+        <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+      </button>
+      <button type="button" class="icon-btn" id="clear-btn" title="Clear conversation" aria-label="Clear conversation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"></path></svg>
+      </button>
+    </div>
+  </header>
+  <p class="subhead">Ask about grants you may be eligible for, or compliance obligations like tax, super, and award pay rates.</p>
+
+  <div class="thread" id="thread">
+    <div class="empty-state" id="empty-state">No questions yet &mdash; ask one below, or try an example.</div>
+  </div>
+
   <form id="form">
-    <input id="input" type="text" placeholder="e.g. What grants am I eligible for as a hospitality business in Victoria?" autocomplete="off" />
+    <input id="input" type="text" placeholder="Ask a question&hellip;" autocomplete="off" aria-label="Your question" />
     <button id="submit" type="submit">Ask</button>
   </form>
-  <div class="examples">
-    <button data-q="What grants am I eligible for as a hospitality business in Victoria with 4 employees?">Grant example</button>
-    <button data-q="What are my superannuation obligations as a small employer?">Tax/compliance example</button>
-    <button data-q="What is the minimum pay rate for a casual retail employee?">Award pay example</button>
+  <div class="examples" id="examples">
+    <button type="button" data-q="What grants am I eligible for as a hospitality business in Victoria with 4 employees?">Grant example</button>
+    <button type="button" data-q="What are my superannuation obligations as a small employer?">Tax example</button>
+    <button type="button" data-q="What is the minimum pay rate for a casual retail employee?">Award pay example</button>
   </div>
-</main>
+
+  <p class="note">
+    Answers currently come from a mock backend (see the badge above) &mdash; every response is clearly labeled as a demo.
+    The real <code>src/website</code> app will swap in live retrieval and Bedrock once that's deployed, with no changes
+    needed on this page.
+  </p>
+</div>
+
 <script>
-  const chat = document.getElementById("chat");
-  const form = document.getElementById("form");
-  const input = document.getElementById("input");
-  const submitBtn = document.getElementById("submit");
+(function () {
+  var thread = document.getElementById("thread");
+  var emptyState = document.getElementById("empty-state");
+  var form = document.getElementById("form");
+  var input = document.getElementById("input");
+  var submitBtn = document.getElementById("submit");
+  var exampleButtons = document.querySelectorAll("#examples button");
+  var clearBtn = document.getElementById("clear-btn");
+  var themeToggle = document.getElementById("theme-toggle");
+  var themeIcon = document.getElementById("theme-icon");
+  var typingRow = null;
 
-  function addMessage(role, html) {
-    const div = document.createElement("div");
-    div.className = "msg " + role;
-    div.innerHTML = html;
-    chat.appendChild(div);
-    div.scrollIntoView({ behavior: "smooth", block: "end" });
+  var SUN_PATH = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>';
+  var MOON_PATH = '<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>';
+
+  function esc(s) {
+    return s.replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
   }
 
-  function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
-  }
-
-  async function ask(question) {
-    addMessage("user", escapeHtml(question));
-    submitBtn.disabled = true;
+  function formatTime(d) {
     try {
-      const res = await fetch("/api/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
-      });
-      if (!res.ok) throw new Error("Request failed: " + res.status);
-      const data = await res.json();
-
-      let html = "";
-      if (data.is_mock) html += '<span class="mock-tag">Demo answer</span><br/>';
-      html += escapeHtml(data.answer).replace(/\n/g, "<br/>");
-
-      if (data.citations && data.citations.length) {
-        html += '<div class="citations"><strong>Sources:</strong><ul style="margin:6px 0 0 18px; padding:0;">';
-        for (const c of data.citations) {
-          html += `<li><a href="${c.url}" target="_blank" rel="noopener">${escapeHtml(c.title)}</a> (${escapeHtml(c.source)})</li>`;
-        }
-        html += "</ul></div>";
-      }
-      if (data.agents_used && data.agents_used.length) {
-        html += `<div class="agents-used">Agents used: ${data.agents_used.map(escapeHtml).join(", ")}</div>`;
-      }
-      addMessage("bot", html);
-    } catch (err) {
-      addMessage("bot", "Something went wrong talking to the backend: " + escapeHtml(err.message));
-    } finally {
-      submitBtn.disabled = false;
+      return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch (e) {
+      return "";
     }
   }
 
-  form.addEventListener("submit", (e) => {
+  // --- Theme ---
+  function applyTheme(theme) {
+    if (theme === "dark" || theme === "light") {
+      document.documentElement.setAttribute("data-theme", theme);
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+    var isDark = theme === "dark" ||
+      (theme !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    themeIcon.innerHTML = isDark ? MOON_PATH : SUN_PATH;
+  }
+
+  function loadTheme() {
+    try {
+      return localStorage.getItem("grants-finder-theme") || "auto";
+    } catch (e) {
+      return "auto";
+    }
+  }
+
+  function saveTheme(theme) {
+    try {
+      localStorage.setItem("grants-finder-theme", theme);
+    } catch (e) { /* ignore - private mode etc. */ }
+  }
+
+  var currentTheme = loadTheme();
+  applyTheme(currentTheme);
+
+  themeToggle.addEventListener("click", function () {
+    var isDark = currentTheme === "dark" ||
+      (currentTheme === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    currentTheme = isDark ? "light" : "dark";
+    saveTheme(currentTheme);
+    applyTheme(currentTheme);
+  });
+
+  // --- Thread rendering ---
+  function hideEmptyState() {
+    if (emptyState) { emptyState.hidden = true; }
+  }
+
+  function renderCitations(citations) {
+    if (!citations || !citations.length) return "";
+    var rows = citations.map(function (c) {
+      return '<div class="citation"><a href="' + c.url + '" target="_blank" rel="noopener">' +
+        esc(c.title) + "</a><span class=\"src\">" + esc(c.source) + "</span></div>";
+    }).join("");
+    return '<div class="citations"><div class="citations-label">Sources</div>' + rows + "</div>";
+  }
+
+  function addRow(role, innerHtml, options) {
+    options = options || {};
+    var row = document.createElement("div");
+    row.className = "row " + role;
+    var bubble = document.createElement("div");
+    bubble.className = "bubble" + (options.error ? " error" : "");
+    bubble.innerHTML = innerHtml;
+    row.appendChild(bubble);
+    if (!options.noTimestamp) {
+      var ts = document.createElement("div");
+      ts.className = "timestamp";
+      ts.textContent = formatTime(new Date());
+      row.appendChild(ts);
+    }
+    thread.appendChild(row);
+    row.scrollIntoView({ behavior: "smooth", block: "end" });
+    return row;
+  }
+
+  function showTyping() {
+    typingRow = addRow("bot", '<span class="typing"><span></span><span></span><span></span></span>', { noTimestamp: true });
+  }
+
+  function hideTyping() {
+    if (typingRow) {
+      typingRow.remove();
+      typingRow = null;
+    }
+  }
+
+  function setBusy(busy) {
+    submitBtn.disabled = busy;
+    input.disabled = busy;
+    exampleButtons.forEach(function (b) { b.disabled = busy; });
+  }
+
+  async function ask(question) {
+    if (!question) return;
+    hideEmptyState();
+    addRow("user", esc(question));
+    setBusy(true);
+    showTyping();
+    try {
+      var res = await fetch("/api/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: question }),
+      });
+      if (!res.ok) throw new Error("Request failed: " + res.status);
+      var data = await res.json();
+
+      var html = "";
+      if (data.is_mock) html += '<span class="demo-tag">Demo answer</span><br/>';
+      html += esc(data.answer).replace(/\n/g, "<br/>");
+      html += renderCitations(data.citations);
+      if (data.agents_used && data.agents_used.length) {
+        html += '<div class="agents">Agents used: <b>' + data.agents_used.map(esc).join(", ") + "</b></div>";
+      }
+      hideTyping();
+      addRow("bot", html);
+    } catch (err) {
+      hideTyping();
+      addRow("bot", "Something went wrong talking to the backend: " + esc(err.message), { error: true });
+    } finally {
+      setBusy(false);
+      input.focus();
+    }
+  }
+
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
-    const q = input.value.trim();
+    var q = input.value.trim();
     if (!q) return;
     input.value = "";
     ask(q);
   });
 
-  document.querySelectorAll(".examples button").forEach((btn) => {
-    btn.addEventListener("click", () => ask(btn.dataset.q));
+  document.getElementById("examples").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-q]");
+    if (btn && !btn.disabled) ask(btn.dataset.q);
   });
+
+  clearBtn.addEventListener("click", function () {
+    thread.querySelectorAll(".row").forEach(function (r) { r.remove(); });
+    if (emptyState) { emptyState.hidden = false; }
+    input.focus();
+  });
+
+  input.focus();
+})();
 </script>
 </body>
 </html>
