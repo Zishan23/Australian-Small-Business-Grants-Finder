@@ -81,13 +81,9 @@ Run the test suite:
 pytest tests/ -v
 ```
 
-Run the local demo website:
+## CI/CD
 
-```
-uvicorn src.website.app:app --reload
-```
-
-Then open http://127.0.0.1:8000 and ask a question. Answers come from a mock backend today (clearly labeled in the UI) until the real RAG pipeline is deployed against live data.
+GitHub Actions runs lint + the full test suite on every push and pull request, and packages a deployment artifact on every merge to `master`. See [docs/ci-cd.md](docs/ci-cd.md) for what's wired up versus what still needs real AWS infra before it can deploy anything.
 
 ## Author
 
