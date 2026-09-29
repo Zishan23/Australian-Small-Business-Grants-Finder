@@ -2,7 +2,7 @@
 # of which ruff version CI (or a contributor's machine) happens to
 # install - newer ruff releases have changed their default rule set
 # before, and we don't want CI going red on a ruff upgrade alone.
-line-length = 100
+line-length = 120
 
 [lint]
 select = ["E", "F"]
